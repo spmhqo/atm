@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ATM - blog post genie</title>
+  <link rel="icon" href="spm.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-gradient-start: #020617;
+      --bg-gradient-end: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.4);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --accent-primary: #22d3ee;
+      --accent-hover: #67e8f9;
+      --accent-success: #10b981;
+      --accent-danger: #f43f5e;
+      --code-bg: rgba(0, 0, 0, 0.3);
+      --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: fixed linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding: 60px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .sub-header {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--accent-primary);
+      letter-spacing: 0.02em;
+    }
+
+    .prompt-workflow {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .step-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 35px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .step-label {
+      font-weight: 800;
+      font-size: 0.8rem;
+      background: var(--accent-primary);
+      color: #020617;
+      padding: 5px 16px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .clear-btn {
+      background: transparent;
+      border: 1px solid var(--accent-danger);
+      color: var(--accent-danger);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+
+    .clear-btn:hover {
+      background: var(--accent-danger);
+      color: white;
+    }
+
+    label {
+      display: block;
+      color: var(--accent-primary);
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+      letter-spacing: 0.03em;
+    }
+
+    .dynamic-input {
+      width: 100%;
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      padding: 16px;
+      border-radius: 12px;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      line-height: 1.5;
+      outline: none;
+      resize: vertical;
+      min-height: 110px;
+      transition: border-color 0.3s;
+    }
+
+    .dynamic-input:focus {
+      border-color: var(--accent-primary);
+    }
+
+    .prompt-content {
+      background: var(--code-bg);
+      padding: 25px;
+      border-radius: 12px;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 0.92rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      border: 1px solid rgba(255,255,255,0.05);
+      margin-bottom: 22px;
+      line-height: 1.6;
+      word-break: break-word;
+      max-height: 520px;
+      overflow-y: auto;
+    }
+
+    .prompt-content::-webkit-scrollbar { width: 8px; }
+    .prompt-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+    .prompt-content::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
+
+    .btn {
+      padding: 14px 32px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s;
+      width: 100%;
+      text-decoration: none;
+      border: none;
+    }
+
+    .copy-btn {
+      background: rgba(34, 211, 238, 0.1);
+      color: var(--accent-primary);
+      border: 1px solid var(--accent-primary);
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-primary);
+      color: #020617;
+    }
+
+    .copy-btn.copied {
+      background: var(--accent-success);
+      border-color: var(--accent-success);
+      color: white;
+    }
+
+    .footer {
+      margin-top: 80px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--card-border);
+      padding-top: 40px;
+      width: 100%;
+      padding-bottom: 40px;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2rem; }
+      .sub-header { font-size: 1rem; }
+      .step-card { padding: 22px; }
+      .prompt-content { font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>ATM</h1>
+      <p class="sub-header">(blog post genie)</p>
+    </header>
+
+    <div class="prompt-workflow">
+      
+      <!-- Multiline Input Card 1 -->
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-label">Input Data 1</span>
+          <button class="clear-btn" onclick="resetInput('inputPrompt2')">Reset</button>
+        </div>
+        <label for="inputPrompt2">[Answer of Prompt#2]</label>
+        <textarea id="inputPrompt2" class="dynamic-input" placeholder="Type or paste the answer of Prompt#2 here..." oninput="updatePrompts()"></textarea>
+      </div>
+
+      <!-- Multiline Input Card 2 -->
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-label">Input Data 2</span>
+          <button class="clear-btn" onclick="resetInput('inputGoal')">Reset</button>
+        </div>
+        <label for="inputGoal">[Insert এই কাজের মাধ্যমে কী অর্জন করতে চাওয়া হচ্ছে]</label>
+        <textarea id="inputGoal" class="dynamic-input" placeholder="এই কাজের মাধ্যমে কী অর্জন করতে চাওয়া হচ্ছে তা এখানে লিখুন বা পেস্ট করুন..." oninput="updatePrompts()"></textarea>
+      </div>
+
+      <!-- Prompt Result Cards -->
+      <div id="promptsContainer">
+        <!-- Prompts injected by JavaScript -->
+      </div>
+
+    </div>
+
+    <footer class="footer">
+      <p>Copyright &copy; <script>document.write(new Date().getFullYear())</script> Siva Prasad Mukherjee. All Rights Reserved.</p>
+    </footer>
+  </div>
+
+  <script>
+    const templates = [
+      {
+        id: 1,
+        text: `Answer the following prompt in Bengali (India).
+
+Rules:
+- Use only Bengali (India).
+- Always address the reader as "আপনি".
+- Never use "তুমি" or "তুই".
+- Use a natural Kolkata-style conversational tone.
+- Use natural, modern Bengali (India).
+- Avoid Bangladeshi vocabulary, spelling, and expressions.
+
+PROMPT
+
+Please read the uploaded pdf and describe what it is about, which issue it solves, what is its suggested solution, and who are ideal to use this solution.`
+      },
+      {
+        id: 2,
+        text: `Describe the ideal audience for the concept taught in this document in English, using the format shown in the EXAMPLE.
+
+RULE (MANDATORY)
+
+The given example is provided to illustrate the format. Do not reuse its wording if it is irrelevant to the concept taught in the document. 
+
+EXAMPLE
+
+Students of
+West Bengal Board of Secondary Education
+Class 9 and 10
+Wants to learn their text book
+Of Life Science
+With ChatGPT
+And searches suitable and effective ai prompts
+For that.`
+      },
+      {
+        id: 3,
+        text: `Answer the following prompt in Bengali (India).
+
+Rules:
+- Use only Bengali (India).
+- Always address the reader as "আপনি".
+- Never use "তুমি" or "তুই".
+- Use a natural Kolkata-style conversational tone.
+- Use natural, modern Bengali (India).
+- Avoid Bangladeshi vocabulary, spelling, and expressions.
+
+PROMPT
+
+আপনি একটি নির্দিষ্ট Work / কাজ / কর্মকে কেন্দ্র করে একটি Content-এর জন্য সম্ভাব্য Title-এর একটি সম্পূর্ণ Bullet List তৈরি করবেন।
+
+আপনার কাজ শুধু Title-এর variation তৈরি করা নয়। প্রথমে প্রদত্ত Work-এর underlying logic reconstruct করবেন। তারপর সেই Work-কে কেন্দ্র করে নির্ধারিত 7টি Core Title Perspective-এর প্রতিটি থেকে সম্ভাব্য Title তৈরি করবেন।
+
+INPUT
+
+WORK / CONTENT TOPIC
+
+[Answer of Prompt#2]
+
+OPTIONAL CONTEXT
+
+[প্রয়োজনে পাঠক, পরিস্থিতি, উদ্দেশ্য, সমস্যা, desired outcome ইত্যাদি দিন]
+
+
+WORK LOGIC
+
+প্রথমে Work-এর internal logic reconstruct করুন।
+
+Work-এর মূল internal logic:
+
+Demand / Necessity → Purpose → Method → Result / Output
+
+এরপর Result-এর বাস্তব consequence:
+
+Result / Output → Impact / Consequence → Changed Situation
+
+
+IMPORTANT PRINCIPLE
+
+7 Core Title Perspectives হলো reader-facing Title Entry Points।
+
+এগুলো Work-এর internal operating logic নয় এবং এগুলোকে একটি mandatory causal sequence হিসেবেও ব্যবহার করা যাবে না।
+
+অর্থাৎ:
+
+Work Logic এবং Title Perspective Model আলাদা রাখুন।
+
+Work Logic ব্যবহার করবেন Work-এর প্রকৃত গঠন ও পারস্পরিক সম্পর্ক বোঝার জন্য।
+
+Title Perspective Model ব্যবহার করবেন একই Work-কে reader-এর বিভিন্ন প্রশ্ন, প্রয়োজন, সমস্যা, motivation এবং desired understanding-এর দিক থেকে Title করার জন্য।
+
+তাই 7টি Title Perspective-এর ক্রমকে Work-এর causal sequence হিসেবে ধরে নেবেন না।
+
+
+7 CORE TITLE PERSPECTIVES
+
+1. DEMAND / NECESSITY
+
+মূল প্রশ্ন:
+
+কেন এই কাজটি প্রয়োজন?
+
+এই perspective থেকে এমন Title তৈরি করুন যা reader-কে বোঝায়:
+
+কেন এই কাজটি প্রয়োজনীয়
+
+কেন এটি উপেক্ষা করা উচিত নয়
+
+কোন পরিস্থিতি, প্রয়োজন বা ঘাটতি এই কাজটিকে necessary করে তুলেছে
+
+কেন এই কাজটি করা দরকার
+
+Title Promise:
+
+Reader বুঝতে পারবেন কেন এই কাজটি প্রয়োজন বা কেন এটি করা দরকার।
+
+
+2. PROBLEM / ISSUE
+
+মূল প্রশ্ন:
+
+Reader কোন সমস্যার মুখোমুখি?
+
+এই perspective থেকে এমন Title তৈরি করুন যা reader-এর:
+
+বর্তমান সমস্যা
+
+difficulty
+
+obstacle
+
+pain point
+
+failure situation
+
+কে সরাসরি identify করে।
+
+Title Promise:
+
+Reader নিজের সমস্যাটিকে স্পষ্টভাবে চিনতে পারবেন।
+
+
+3. CAUSE / REASON
+
+মূল প্রশ্ন:
+
+সমস্যাটি কেন হচ্ছে?
+
+এই perspective-এ Problem এবং Cause-কে কখনও এক করবেন না।
+
+Problem ≠ Cause
+
+Problem হলো কী ঘটছে।
+
+Cause হলো কেন ঘটছে।
+
+এই perspective থেকে এমন Title তৈরি করুন যা:
+
+সমস্যার অন্তর্নিহিত কারণ
+
+overlooked reason
+
+root cause
+
+ভুল ধারণা বা ভুল operation
+
+সমস্যার প্রকৃত source
+
+উন্মোচনের promise দেয়।
+
+Title Promise:
+
+Reader বুঝতে পারবেন সমস্যাটি আসলে কেন হচ্ছে।
+
+
+4. SOLUTION
+
+মূল প্রশ্ন:
+
+এই সমস্যার সমাধান কী?
+
+এই perspective-এ Solution এবং Method-কে কখনও এক করবেন না।
+
+Solution ≠ Method
+
+Solution হলো কী করতে হবে বা কী ব্যবস্থা নিতে হবে।
+
+Method হলো সেটি কীভাবে করতে হবে।
+
+এই perspective থেকে এমন Title তৈরি করুন যা reader-কে solution-এর দিকে নিয়ে যায়।
+
+Title Promise:
+
+Reader জানতে পারবেন সমস্যার সমাধান কী।
+
+
+5. METHOD
+
+মূল প্রশ্ন:
+
+সমাধানটি কীভাবে করা হবে?
+
+এই perspective-এ execution process, procedure, steps, technique, framework বা operating method-এর উপর focus করুন।
+
+Title-এর promise হবে:
+
+কীভাবে করবেন।
+
+Title Promise:
+
+Reader কাজটি সম্পাদনের পদ্ধতি জানতে পারবেন।
+
+
+6. OBJECTIVE RESULT / OUTPUT
+
+মূল প্রশ্ন:
+
+এই Method বা Work সম্পাদন করলে কী ফল পাওয়া যাবে?
+
+এখানে Result বলতে কাজটির direct বা objective output বোঝাবে।
+
+Result ≠ Impact
+
+Result হলো কাজটি সম্পাদনের প্রত্যক্ষ outcome।
+
+এই perspective থেকে এমন Title তৈরি করুন যা reader-এর কাছে কাজটির প্রত্যাশিত direct result স্পষ্ট করে।
+
+Title Promise:
+
+Reader জানতে পারবেন কাজটি করলে কী ফল পাওয়া যাবে।
+
+
+7. IMPACT / CONSEQUENCE
+
+মূল প্রশ্ন:
+
+Objective Result-এর ফলে পরিস্থিতির উপর কী প্রভাব পড়বে?
+
+এখানে logic হবে:
+
+Method → Objective Result → Impact → Changed Situation
+
+এই perspective থেকে এমন Title তৈরি করুন যা দেখায়:
+
+Result-এর practical effect
+
+Situation-এর পরিবর্তন
+
+downstream consequence
+
+কীভাবে reader-এর বর্তমান অবস্থার পরিবর্তন হবে
+
+Result পাওয়ার পর কী বাস্তব সুবিধা বা পরিবর্তন আসবে
+
+Title Promise:
+
+Reader বুঝতে পারবেন ফলটি তাঁর পরিস্থিতিকে কীভাবে বদলাবে।
+
+
+TITLE GENERATION METHOD
+
+প্রতিটি Core Perspective-এর জন্য নিচের process অনুসরণ করুন।
+
+STEP 1 — Work Logic Reconstruct করুন
+
+প্রথমে Work-এর:
+
+Demand / Necessity
+
+Purpose
+
+Method
+
+Objective Result / Output
+
+Impact / Consequence
+
+Changed Situation
+
+যতদূর প্রদত্ত তথ্য থেকে নির্ভরযোগ্যভাবে নির্ধারণ করা যায়, তা identify করুন।
+
+কোনও তথ্য দেওয়া না থাকলে তা অনুমান করে fact হিসেবে প্রতিষ্ঠা করবেন না। প্রয়োজন হলে context থেকে logically infer করতে পারেন, কিন্তু inference-কে inference হিসেবেই বিবেচনা করবেন।
+
+
+STEP 2 — Perspective-এর Underlying Question নির্ধারণ করুন
+
+যেমন:
+
+Demand / Necessity → কেন প্রয়োজন?
+
+Problem / Issue → কী সমস্যা?
+
+Cause / Reason → কেন সমস্যা?
+
+Solution → সমাধান কী?
+
+Method → কীভাবে?
+
+Objective Result / Output → কী ফল?
+
+Impact / Consequence → ফলের প্রভাব কী?
+
+
+STEP 3 — Reader-এর অবস্থান নির্ধারণ করুন
+
+Reader কি:
+
+সমস্যা অনুভব করছেন?
+
+কারণ খুঁজছেন?
+
+সমাধান খুঁজছেন?
+
+কীভাবে করবেন জানতে চাইছেন?
+
+কী Result পাবেন জানতে চাইছেন?
+
+Result-এর practical Impact জানতে চাইছেন?
+
+কাজটির necessity বুঝতে চাইছেন?
+
+
+STEP 4 — Content Promise নির্ধারণ করুন
+
+প্রতিটি Title-এর ক্ষেত্রে নির্ধারণ করুন:
+
+এই Content পড়লে reader কী বুঝবেন, জানতে পারবেন বা করতে পারবেন?
+
+Title যেন সেই promise-এর সঙ্গে logically consistent হয়।
+
+
+STEP 5 — Distinct Title Angles identify করুন
+
+একটি Perspective-এর ভিতরে সম্ভাব্য বিভিন্ন meaningful angle identify করুন।
+
+একই Perspective-এর মধ্যে Title-এর angle হতে পারে:
+
+reader-এর প্রশ্ন
+
+reader-এর motivation
+
+reader-এর concern
+
+reader-এর current situation
+
+reader-এর desired outcome
+
+unexpected insight
+
+common mistake
+
+hidden reason
+
+practical consequence
+
+decision point
+
+প্রাসঙ্গিক হলে অন্যান্য meaningful angle-ও ব্যবহার করুন।
+
+
+STEP 6 — Titles Generate করুন
+
+প্রতিটি distinct angle থেকে Title তৈরি করুন।
+
+Title-গুলো যেন শুধু একই বাক্যের শব্দ পরিবর্তন না হয়।
+
+প্রতিটি Title-এর angle, reader motivation, framing অথবা promise যথাসম্ভব genuinely different রাখুন।
+
+
+STRICT CONCEPTUAL DISTINCTIONS
+
+নিচের distinction-গুলো কঠোরভাবে বজায় রাখুন:
+
+Demand / Necessity ≠ Problem
+
+Problem / Issue ≠ Cause / Reason
+
+Cause / Reason ≠ Solution
+
+Solution ≠ Method
+
+Method ≠ Result
+
+Result / Output ≠ Impact / Consequence
+
+Impact / Consequence ≠ Changed Situation
+
+Demand / Necessity ≠ Purpose
+
+Purpose ≠ Method
+
+Purpose হলো Work-এর intended objective বা অর্জন করতে চাওয়া Result।
+
+Method হলো সেই Result অর্জনের পদ্ধতি।
+
+Result হলো Work-এর direct objective output।
+
+Impact হলো সেই Result-এর ফলে Situation-এর উপর প্রভাব।
+
+Changed Situation হলো Impact-এর পর পরিবর্তিত অবস্থা।
+
+
+TITLE PERSPECTIVE RULE
+
+একটি Title-এ একটি নির্দিষ্ট Core Perspective-এর primary promise স্পষ্ট থাকতে হবে।
+
+একটি Title একই সঙ্গে একাধিক perspective touch করতে পারে, কিন্তু Title-এর primary entry point অবশ্যই identify করা সম্ভব হতে হবে।
+
+যদি একটি Title-এর primary perspective নির্ধারণ করা না যায়, সেটি বাদ দিন বা পুনর্লিখুন।
+
+
+COVERAGE RULE
+
+“সম্ভাব্য সমস্ত Title” বলতে অসংখ্য superficial variation তৈরি করা বোঝাবে না।
+
+এর অর্থ হলো প্রতিটি Core Perspective-এর মধ্যে যতগুলি genuinely different এবং useful Title Angle পাওয়া যায়, সেগুলি যতটা সম্ভব সম্পূর্ণভাবে identify করা।
+
+শুধু synonym, word-order, punctuation বা সামান্য phrasing পরিবর্তন করে duplicate Title তৈরি করবেন না।
+
+যতক্ষণ পর্যন্ত নতুন Title একটি genuinely different:
+
+reader concern
+
+question
+
+motivation
+
+promise
+
+framing
+
+বা entry point
+
+তৈরি করছে, ততক্ষণ সেটিকে আলাদা Title হিসেবে বিবেচনা করা যেতে পারে।
+
+যদি কোনও Perspective থেকে কোনও meaningful distinct Title Angle পাওয়া না যায়, জোর করে Title তৈরি করবেন না।
+
+সেক্ষেত্রে লিখুন:
+
+No distinct title angle identified.
+
+
+OUTPUT FORMAT
+
+প্রথমে দিন:
+
+WORK LOGIC RECONSTRUCTION
+
+Demand / Necessity:
+[উত্তর]
+
+Purpose:
+[উত্তর]
+
+Method:
+[উত্তর]
+
+Objective Result / Output:
+[উত্তর]
+
+Impact / Consequence:
+[উত্তর]
+
+Changed Situation:
+[উত্তর]
+
+
+তারপর দিন:
+
+1. Demand / Necessity Perspective
+
+- Title
+- Title
+- Title
+- ...
+
+
+2. Problem / Issue Perspective
+
+- Title
+- Title
+- Title
+- ...
+
+
+3. Cause / Reason Perspective
+
+- Title
+- Title
+- Title
+- ...
+
+
+4. Solution Perspective
+
+- Title
+- Title
+- Title
+- ...
+
+
+5. Method Perspective
+
+- Title
+- Title
+- Title
+- ...
+
+
+6. Objective Result / Output Perspective
+
+- Title
+- Title
+- Title
+- ...
+
+
+7. Impact / Consequence Perspective
+
+- Title
+- Title
+- Title
+- ...
+
+
+FINAL QUALITY CHECK
+
+Final output দেওয়ার আগে internally verify করুন:
+
+1. Work-এর internal logic কি সঠিকভাবে reconstruct করা হয়েছে?
+2. Work Logic এবং Title Perspective Model কি আলাদা রাখা হয়েছে?
+
+3. সাতটি Core Perspective কি logically distinct রাখা হয়েছে?
+
+4. Demand / Necessity এবং Purpose কি এক করা হয়নি?
+
+5. Problem এবং Cause কি আলাদা রাখা হয়েছে?
+
+6. Cause এবং Solution কি এক করা হয়নি?
+
+7. Solution এবং Method কি আলাদা রাখা হয়েছে?
+
+8. Method এবং Result কি এক করা হয়নি?
+
+9. Result এবং Impact কি আলাদা রাখা হয়েছে?
+
+10. Impact এবং Changed Situation কি এক করা হয়নি?
+
+11. প্রতিটি Title কি তার assigned Perspective-এর primary question বা promise-এর সঙ্গে consistent?
+
+12. একই Title-এর superficial variation কি বাদ দেওয়া হয়েছে?
+
+13. প্রতিটি Perspective-এর meaningful distinct angles কি যথাসম্ভব সম্পূর্ণভাবে cover করা হয়েছে?
+
+14. কোনও Title কি অন্য Perspective-এর primary promise হিসেবে বেশি উপযুক্ত? হলে সেটি সংশোধন করুন।
+
+15. Title list কি maximum quantity নয়, maximum meaningful coverage প্রদান করছে?
+
+
+PERSPECTIVE COVERAGE SUMMARY
+
+শেষে একটি summary table দিন:
+
+Perspective | Distinct Angles Found | Titles Generated
+
+Demand / Necessity | X | X
+
+Problem / Issue | X | X
+
+Cause / Reason | X | X
+
+Solution | X | X
+
+Method | X | X
+
+Objective Result / Output | X | X
+
+Impact / Consequence | X | X
+
+
+FINAL PRINCIPLE
+
+The goal is not to generate as many titles as possible.
+
+The goal is to systematically uncover the maximum number of genuinely different, logically valid, reader-relevant Title Angles that can be generated from the seven Core Title Perspectives of the given Work, without duplication or conceptual overlap.`
+      },
+      {
+        id: 4,
+        text: `Adhering strictly to the statement below, please identify a “how-to” keyword that people might search for on Google.com.
+
+STATEMENT
+
+[Insert এই কাজের মাধ্যমে কী অর্জন করতে চাওয়া হচ্ছে]`
+      },
+      {
+        id: 5,
+        text: `অনুগ্রহ করে আগের Authority Content-এর জন্য তৈরি করা Image-টিকে visual reference হিসেবে নিয়ে 16:9 landscape feature image তৈরি করে দাও।`
+      }
+    ];
+
+    function createCards() {
+      const container = document.getElementById('promptsContainer');
+      container.innerHTML = '';
+      templates.forEach(t => {
+        const card = document.createElement('div');
+        card.className = 'step-card';
+        card.innerHTML = `
+          <div class="step-header">
+            <span class="step-label">Prompt #${t.id}</span>
+          </div>
+          <div class="prompt-content" id="p${t.id}"></div>
+          <button class="btn copy-btn" onclick="copyText('p${t.id}', this)">
+            <span>Copy Prompt #${t.id}</span>
+          </button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function updatePrompts() {
+      const p2Val = document.getElementById('inputPrompt2').value.trim() || "[Answer of Prompt#2]";
+      const goalVal = document.getElementById('inputGoal').value.trim() || "[Insert এই কাজের মাধ্যমে কী অর্জন করতে চাওয়া হচ্ছে]";
+
+      templates.forEach(t => {
+        let updatedText = t.text;
+        if (t.id === 3) {
+          updatedText = updatedText.split('[Answer of Prompt#2]').join(p2Val);
+        }
+        if (t.id === 4) {
+          updatedText = updatedText.split('[Insert এই কাজের মাধ্যমে কী অর্জন করতে চাওয়া হচ্ছে]').join(goalVal);
+        }
+        document.getElementById(`p${t.id}`).innerText = updatedText;
+      });
+    }
+
+    function resetInput(fieldId) {
+      document.getElementById(fieldId).value = "";
+      updatePrompts();
+    }
+
+    function copyText(id, btn) {
+      const text = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = `<span>Copied to Clipboard!</span>`;
+        btn.classList.add('copied');
+        
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    // Initialize on page load
+    window.onload = () => {
+      createCards();
+      updatePrompts();
+    };
+  </script>
+</body>
+</html>
